@@ -4,77 +4,28 @@ using System.Data.Entity.Validation;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TestModel;
-using TestService;
+using TFundSolution.Models;
 
-namespace TestService
+namespace TFundSolution.Services
 {
 
     public interface IUnitOfWork : IDisposable
     {
 
+        IGenericRepository<OPNMAGEN> OPNMAGEN_Repo { get; }
         IGenericRepository<OPNCONTL> OPNCONTL_Repo { get; }
+        IGenericRepository<FEE_SETTING> FEE_SETTING_Repo { get; }
+        IGenericRepository<FEE_SETTING_ONGO> FEE_SETTING_ONGO_Repo { get; }
 
         void Save();
         void SaveWithLog();
 
     }
 
-    public class UnitOfWorkDummy : IUnitOfWork
+    public class UnitOfWorkTFund : IUnitOfWork
     {
 
-        private DummyGenericRepository<OPNCONTL> _OPNCONTL;
-
-        public IGenericRepository<OPNCONTL> OPNCONTL_Repo
-        {
-            get
-            {
-                if (this._OPNCONTL == null)
-                {
-                    this._OPNCONTL = new DummyGenericRepository<OPNCONTL>();
-                }
-                return this._OPNCONTL;
-            }
-        }
-
-
-        public void Save()
-        {
-            //throw new NotImplementedException();
-        }
-
-
-        public void SaveWithLog()
-        {
-            //throw new NotImplementedException();
-        }
-
-        private bool disposed = false;
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!this.disposed)
-            {
-                if (disposing)
-                {
-                    //context.Dispose();
-                }
-            }
-            this.disposed = true;
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-    }
-
-    public class UnitOfWorkTest : IUnitOfWork
-    {
-
-        private ModelCsi context = new ModelCsi();
+        private ModelTFund context = new ModelTFund();
 
         private GenericRepository<OPNCONTL> _OPNCONTL;
         public IGenericRepository<OPNCONTL> OPNCONTL_Repo
@@ -89,72 +40,59 @@ namespace TestService
             }
         }
 
-        private GenericRepository<TMP_TEST> _TMP_TEST;
-        public IGenericRepository<TMP_TEST> TMP_TEST
+        private GenericRepository<OPNMAGEN> _OPNMAGEN;
+        public IGenericRepository<OPNMAGEN> OPNMAGEN_Repo
         {
-            get
+            get 
             {
-                if (this._TMP_TEST == null)
+                if (this._OPNMAGEN == null)
                 {
-                    this._TMP_TEST = new GenericRepository<TMP_TEST>(context);
+                    this._OPNMAGEN = new GenericRepository<OPNMAGEN>(context);
                 }
-                return this._TMP_TEST;
+                return this._OPNMAGEN;
             }
         }
 
-        private GenericRepository<TEST_EF_MAIN> _TEST_EF_MAIN;
-        public IGenericRepository<TEST_EF_MAIN> TEST_EF_MAIN_Repo
+        private GenericRepository<LOG_SYSTEM> _LOG_SYSTEM;
+        public IGenericRepository<LOG_SYSTEM> LOG_SYSTEM_Repo
         {
             get
             {
-                if (this._TEST_EF_MAIN == null)
+                if (this._LOG_SYSTEM == null)
                 {
-                    this._TEST_EF_MAIN = new GenericRepository<TEST_EF_MAIN>(context);
+                    this._LOG_SYSTEM = new GenericRepository<LOG_SYSTEM>(context);
                 }
-                return this._TEST_EF_MAIN;
+                return this._LOG_SYSTEM;
+            }
+        }
+
+        private GenericRepository<FEE_SETTING> _FEE_SETTING;
+        public IGenericRepository<FEE_SETTING> FEE_SETTING_Repo
+        {
+            get
+            {
+                if (this._FEE_SETTING == null)
+                {
+                    this._FEE_SETTING = new GenericRepository<FEE_SETTING>(context);
+                }
+                return this._FEE_SETTING;
+            }
+        }
+
+        private GenericRepository<FEE_SETTING_ONGO> _FEE_SETTING_ONGO;
+        public IGenericRepository<FEE_SETTING_ONGO> FEE_SETTING_ONGO_Repo
+        {
+            get
+            {
+                if (this._FEE_SETTING_ONGO == null)
+                {
+                    this._FEE_SETTING_ONGO = new GenericRepository<FEE_SETTING_ONGO>(context);
+                }
+                return this._FEE_SETTING_ONGO;
             }
         }
 
 
-        private GenericRepository<TEST_EF_DESCRIPTION> _TEST_EF_DESCRIPTION;
-        public IGenericRepository<TEST_EF_DESCRIPTION> TEST_EF_DESCRIPTION_Repo
-        {
-            get
-            {
-                if (this._TEST_EF_DESCRIPTION == null)
-                {
-                    this._TEST_EF_DESCRIPTION = new GenericRepository<TEST_EF_DESCRIPTION>(context);
-                }
-                return this._TEST_EF_DESCRIPTION;
-            }
-        }
-
-        private GenericRepository<LOG_MAIN> _LOG_MAIN;
-        public IGenericRepository<LOG_MAIN> LOG_MAIN_Repo
-        {
-            get
-            {
-                if (this._LOG_MAIN == null)
-                {
-                    this._LOG_MAIN = new GenericRepository<LOG_MAIN>(context);
-                }
-                return this._LOG_MAIN;
-            }
-        }
-
-
-        private GenericRepository<LOG_TABLE> _LOG_TABLE;
-        public IGenericRepository<LOG_TABLE> LOG_TABLE_Repo
-        {
-            get
-            {
-                if (this._LOG_TABLE == null)
-                {
-                    this._LOG_TABLE = new GenericRepository<LOG_TABLE>(context);
-                }
-                return this._LOG_TABLE;
-            }
-        }
 
         //public GenericRepository<T> getGeneric<T>() where T : class
         //{
@@ -231,5 +169,99 @@ namespace TestService
             Dispose(true);
             GC.SuppressFinalize(this);
         }
+
+       
     }
+
+    public class UnitOfWorkDummyTFund : IUnitOfWork
+    {
+
+        private DummyGenericRepository<OPNCONTL> _OPNCONTL;
+        public IGenericRepository<OPNCONTL> OPNCONTL_Repo
+        {
+            get
+            {
+                if (this._OPNCONTL == null)
+                {
+                    this._OPNCONTL = new DummyGenericRepository<OPNCONTL>();
+                }
+                return this._OPNCONTL;
+            }
+        }
+
+        private DummyGenericRepository<OPNMAGEN> _OPNMAGEN;
+        public IGenericRepository<OPNMAGEN> OPNMAGEN_Repo
+        {
+            get
+            {
+                if (this._OPNMAGEN == null)
+                {
+                    this._OPNMAGEN = new DummyGenericRepository<OPNMAGEN>();
+                }
+                return this._OPNMAGEN;
+            }
+        }
+
+        private DummyGenericRepository<FEE_SETTING> _FEE_SETTING;
+        public IGenericRepository<FEE_SETTING> FEE_SETTING_Repo
+        {
+            get
+            {
+                if (this._FEE_SETTING == null)
+                {
+                    this._FEE_SETTING = new DummyGenericRepository<FEE_SETTING>();
+                }
+                return this._FEE_SETTING;
+            }
+        }
+
+        private DummyGenericRepository<FEE_SETTING_ONGO> _FEE_SETTING_ONGO;
+        public IGenericRepository<FEE_SETTING_ONGO> FEE_SETTING_ONGO_Repo
+        {
+            get
+            {
+                if (this._FEE_SETTING_ONGO == null)
+                {
+                    this._FEE_SETTING_ONGO = new DummyGenericRepository<FEE_SETTING_ONGO>();
+                }
+                return this._FEE_SETTING_ONGO;
+            }
+        }
+
+     
+
+        public void Save()
+        {
+            //throw new NotImplementedException();
+        }
+
+
+        public void SaveWithLog()
+        {
+            //throw new NotImplementedException();
+        }
+
+        private bool disposed = false;
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!this.disposed)
+            {
+                if (disposing)
+                {
+                    //context.Dispose();
+                }
+            }
+            this.disposed = true;
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+    }
+
+
 }

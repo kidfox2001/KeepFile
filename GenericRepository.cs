@@ -6,9 +6,10 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
-using TestService;
+using TFundSolution.Utils.Objects;
 
-namespace TestService
+
+namespace TFundSolution.Services
 {
 
    public interface IGenericRepository<TEntity> where TEntity : class
@@ -31,6 +32,8 @@ namespace TestService
           void Insert(TEntity entity);
 
           void Update(TEntity entityToUpdate);
+
+          void UpdateWithLog(TEntity entityToUpdate);
 
           void Delete(object id);
 
@@ -142,6 +145,15 @@ namespace TestService
             dbSet.Remove(entityToDelete);
         }
 
+        public virtual void UpdateWithLog(TEntity entityToUpdate)
+        {
+            //TEntity x = entityToUpdate.CloneObject<TEntity>();
+
+            //dbSet.Attach(entityToUpdate);
+            //context.Entry(entityToUpdate).Reload();
+            //context.Entry(entityToUpdate).State = EntityState.Modified;
+        }
+
         public virtual void Update(TEntity entityToUpdate)
         {
             dbSet.Attach(entityToUpdate);
@@ -240,6 +252,16 @@ namespace TestService
                items.Remove(item);
                items.Add(entityToUpdate);
            }
+        }
+
+        public void UpdateWithLog(TEntity entityToUpdate)
+        {
+            var item = items.Where(i => i == entityToUpdate).SingleOrDefault();
+            if (item != null)
+            {
+                items.Remove(item);
+                items.Add(entityToUpdate);
+            }
 
         }
 
