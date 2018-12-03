@@ -125,6 +125,13 @@ namespace TFundSolution.Services
             dbSet.Add(entity);
         }
 
+        public void InsertBulkManual(IEnumerable<TEntity> entities)
+        {
+            context.Configuration.AutoDetectChangesEnabled = false;
+
+            dbSet.AddRange(entities);
+        }
+
         public void InsertBulk(IEnumerable<TEntity> entities)
         {
             //context.BulkInsert<TEntity>(entities, options => options.IncludeGraph = true); 
@@ -195,6 +202,7 @@ namespace TFundSolution.Services
         {
             throw new NotImplementedException();
         }
+
 
     }
     
@@ -306,6 +314,12 @@ namespace TFundSolution.Services
 
 
         public void InsertBulkAndSave(IEnumerable<TEntity> entities)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public void InsertBulkManual(IEnumerable<TEntity> entities)
         {
             throw new NotImplementedException();
         }
