@@ -6,44 +6,57 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using Z.EntityFramework.Extensions;
+using Oracle.ManagedDataAccess.Client;
 using TFundSolution.Utils.Objects;
 
 
 namespace TFundSolution.Services
 {
 
-   public interface IGenericRepository<TEntity> where TEntity : class
+    public interface IGenericRepository<TEntity> where TEntity : class
     {
 
-          IEnumerable<TEntity> Get(
-            Expression<Func<TEntity, bool>> filter = null,
-            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
-            string includeProperties = "");
+        IEnumerable<TEntity> Get(
+          Expression<Func<TEntity, bool>> filter = null,
+          Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
+          string includeProperties = "");
 
-          IQueryable<TEntity> GetQueryable(
-            Expression<Func<TEntity, bool>> filter = null,
-            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
-            string includeProperties = "");
+        IQueryable<TEntity> GetQueryable();
 
-          IEnumerable<TEntity> GetAll();
+        IEnumerable<TEntity> GetAll();
 
-          TEntity GetByID(object id);
-        
-          void Insert(TEntity entity);
+        TEntity GetByID(object id);
 
-          void Update(TEntity entityToUpdate);
+        void Insert(TEntity entity);
 
-          void UpdateWithLog(TEntity entityToUpdate);
+        void InsertBulkManual(IEnumerable<TEntity> entities);
 
-          void Delete(object id);
+        void InsertBulk(IEnumerable<TEntity> entities);
 
-          void Delete(TEntity entityToDelete);
+        void InsertBulkAndSave(IEnumerable<TEntity> entities);
 
-          IEnumerable<TEntity> GetByStoredProcedure(string spName, params SqlParameter[] parameters);
+        void Update(TEntity entityToUpdate);
+
+        /// <summary>
+        ///  navigation property ควรเป้น null ให้หมด
+        /// </summary>
+        /// <param name="entityToUpdate"></param>
+        void UpdateWithLog(TEntity entityToUpdate);
+
+        void DeleteById(object id);
+
+        void Delete(TEntity entityToDelete);
+
+        void DeleteBulk(IEnumerable<TEntity> entities);
+
+        IEnumerable<TEntity> SqlQuery(string cmd, OracleParameter[] para);
+
+        IEnumerable<TEntity> GetByStoredProcedure(string spName, params SqlParameter[] parameters);
 
     }
 
-    public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity :class
+    public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : class
     {
         internal DbContext context;
         internal DbSet<TEntity> dbSet;
@@ -51,14 +64,14 @@ namespace TFundSolution.Services
 
         public GenericRepository(DbContext context)
         {
-           
+
 
             this.context = context;
             this.dbSet = context.Set<TEntity>();
 
             context.Database.Log = s => System.Diagnostics.Debug.WriteLine(s);
             //context.Database.Log = s => (new LogFile()).writeLog(s);
-            
+
         }
 
         public virtual IEnumerable<TEntity> Get(
@@ -90,29 +103,11 @@ namespace TFundSolution.Services
         }
 
 
-        public IQueryable<TEntity> GetQueryable(Expression<Func<TEntity, bool>> filter = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null, string includeProperties = "")
+        public IQueryable<TEntity> GetQueryable()
         {
             IQueryable<TEntity> query = dbSet;
-
-            if (filter != null)
-            {
-                query = query.Where(filter);
-            }
-
-            foreach (var includeProperty in includeProperties.Split
-                (new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-            {
-                query = query.Include(includeProperty);
-            }
-
-            if (orderBy != null)
-            {
-                return orderBy(query);
-            }
-            else
-            {
+           
                 return query;
-            }
         }
 
         public virtual IEnumerable<TEntity> GetAll()
@@ -130,10 +125,28 @@ namespace TFundSolution.Services
             dbSet.Add(entity);
         }
 
-        public virtual void Delete(object id)
+        public void InsertBulk(IEnumerable<TEntity> entities)
+        {
+            //context.BulkInsert<TEntity>(entities, options => options.IncludeGraph = true); 
+
+            context.Configuration.AutoDetectChangesEnabled = false;
+            dbSet.AddRange(entities);
+            context.ChangeTracker.DetectChanges();
+        }
+
+        public void InsertBulkAndSave(IEnumerable<TEntity> entities)
+        {
+            context.BulkInsert<TEntity>(entities, options => options.IncludeGraph = true);
+        }
+
+        public virtual void DeleteById(object id)
         {
             TEntity entityToDelete = dbSet.Find(id);
-            Delete(entityToDelete);
+
+            if (entityToDelete != null)
+            {
+                Delete(entityToDelete);
+            }
         }
 
         public virtual void Delete(TEntity entityToDelete)
@@ -145,13 +158,23 @@ namespace TFundSolution.Services
             dbSet.Remove(entityToDelete);
         }
 
+        public void DeleteBulk(IEnumerable<TEntity> entities)
+        {
+            context.Configuration.AutoDetectChangesEnabled = false;
+            dbSet.RemoveRange(entities);
+            context.ChangeTracker.DetectChanges();
+        }
+
         public virtual void UpdateWithLog(TEntity entityToUpdate)
         {
-            //TEntity x = entityToUpdate.CloneObject<TEntity>();
+            TEntity newObject = entityToUpdate.CloneObject<TEntity>();
 
-            //dbSet.Attach(entityToUpdate);
-            //context.Entry(entityToUpdate).Reload();
-            //context.Entry(entityToUpdate).State = EntityState.Modified;
+            dbSet.Attach(entityToUpdate);
+            context.Entry(entityToUpdate).Reload();
+            context.Entry(entityToUpdate).State = EntityState.Modified;
+
+            context.Entry(entityToUpdate).CurrentValues.SetValues(newObject);
+
         }
 
         public virtual void Update(TEntity entityToUpdate)
@@ -167,18 +190,23 @@ namespace TFundSolution.Services
             return context.Database.SqlQuery<TEntity>(command, parameters).ToList();
         }
 
+
+        public IEnumerable<TEntity> SqlQuery(string cmd, OracleParameter[] para)
+        {
+            throw new NotImplementedException();
+        }
+
     }
-
-
+    
     public class DummyGenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : class
     {
-        internal List<TEntity> items  = new List<TEntity>();
+        internal List<TEntity> items = new List<TEntity>();
 
         public IEnumerable<TEntity> Get(Expression<Func<TEntity, bool>> filter = null, Func<IQueryable<TEntity>,
             IOrderedQueryable<TEntity>> orderBy = null, string includeProperties = "")
         {
 
-            IQueryable<TEntity> query = from i in items.AsQueryable() select i ;
+            IQueryable<TEntity> query = from i in items.AsQueryable() select i;
 
 
             if (filter != null)
@@ -203,30 +231,11 @@ namespace TFundSolution.Services
 
         }
 
-        public IQueryable<TEntity> GetQueryable(Expression<Func<TEntity, bool>> filter = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null, string includeProperties = "")
+        public IQueryable<TEntity> GetQueryable()
         {
             IQueryable<TEntity> query = from i in items.AsQueryable() select i;
 
-
-            if (filter != null)
-            {
-                query = query.Where(filter);
-            }
-
-            foreach (var includeProperty in includeProperties.Split
-                (new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-            {
-                query = query.Include(includeProperty);
-            }
-
-            if (orderBy != null)
-            {
-                return orderBy(query);
-            }
-            else
-            {
-                return query;
-            }
+            return query;
         }
 
         public IEnumerable<TEntity> GetAll()
@@ -241,17 +250,17 @@ namespace TFundSolution.Services
 
         public void Insert(TEntity entity)
         {
-             items.Add(entity);
+            items.Add(entity);
         }
 
         public void Update(TEntity entityToUpdate)
         {
-           var item =  items.Where(i => i == entityToUpdate).SingleOrDefault();
-           if (item != null)
-           {
-               items.Remove(item);
-               items.Add(entityToUpdate);
-           }
+            var item = items.Where(i => i == entityToUpdate).SingleOrDefault();
+            if (item != null)
+            {
+                items.Remove(item);
+                items.Add(entityToUpdate);
+            }
         }
 
         public void UpdateWithLog(TEntity entityToUpdate)
@@ -265,7 +274,7 @@ namespace TFundSolution.Services
 
         }
 
-        public void Delete(object id)
+        public void DeleteById(object id)
         {
             throw new NotImplementedException();
         }
@@ -280,7 +289,26 @@ namespace TFundSolution.Services
             throw new NotImplementedException();
         }
 
+        public void InsertBulk(IEnumerable<TEntity> entities)
+        {
+            throw new NotImplementedException();
+        }
 
-     
+        public void DeleteBulk(IEnumerable<TEntity> entities)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<TEntity> SqlQuery(string cmd, OracleParameter[] para)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public void InsertBulkAndSave(IEnumerable<TEntity> entities)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
+

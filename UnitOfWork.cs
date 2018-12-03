@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Data.Entity.Validation;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Oracle.ManagedDataAccess.Client;
 using TFundSolution.Models;
 
 namespace TFundSolution.Services
@@ -12,42 +14,59 @@ namespace TFundSolution.Services
     public interface IUnitOfWork : IDisposable
     {
 
-        IGenericRepository<OPNMAGEN> OPNMAGEN_Repo { get; }
-        IGenericRepository<OPNCONTL> OPNCONTL_Repo { get; }
+        IGenericRepository<Agent> Agent_Repo { get; }
+        IGenericRepository<Fund> Fund_Repo { get; }
         IGenericRepository<FEE_SETTING> FEE_SETTING_Repo { get; }
         IGenericRepository<FEE_SETTING_ONGO> FEE_SETTING_ONGO_Repo { get; }
+        IGenericRepository<FEE_SETTING_TBANK> FEE_SETTING_TBANK_Repo { get; }
+        IGenericRepository<FEE_SETTING_ONPAY> FEE_SETTING_ONPAY_Repo { get; }
+        IGenericRepository<FEE_SETTING_YEAR> FEE_SETTING_YEAR_Repo { get; }
+        IGenericRepository<FEE_SETTING_ONLEVEL> FEE_SETTING_ONLEVEL_Repo { get; }
+        IGenericRepository<FEE_SETTING_UPFRONT> FEE_SETTING_UPFRONT_Repo { get; }
+        IGenericRepository<FEE_UPFRONT_ONLEVEL> FEE_UPFRONT_ONLEVEL_Repo { get; }
+        IGenericRepository<OPRTNAV> OPRTNAV_Repo { get; }
+        IGenericRepository<V_CALENDAR> V_CALENDAR_Repo { get; }
+        IGenericRepository<DailyNav> V_W_NAV_Repo { get; }
 
         void Save();
         void SaveWithLog();
+        void SaveBulk();
+        int ExecuteSql(string cmd, IEnumerable<OracleParameter> para);
 
     }
 
     public class UnitOfWorkTFund : IUnitOfWork
     {
+        private ModelTFundCis ContextCis;
+        private ModelTFundOper ContextOper;
 
-        private ModelTFund context = new ModelTFund();
+        public UnitOfWorkTFund(DbContext contextCis, DbContext contextOper)
+        {
+            this.ContextCis = (ModelTFundCis)contextCis;
+            this.ContextOper = (ModelTFundOper)contextOper;
+        }
 
-        private GenericRepository<OPNCONTL> _OPNCONTL;
-        public IGenericRepository<OPNCONTL> OPNCONTL_Repo
+        private GenericRepository<Fund> _OPNCONTL;
+        public IGenericRepository<Fund> Fund_Repo
         {
             get
             {
                 if (this._OPNCONTL == null)
                 {
-                    this._OPNCONTL = new GenericRepository<OPNCONTL>(context);
+                    this._OPNCONTL = new GenericRepository<Fund>(ContextCis);
                 }
                 return this._OPNCONTL;
             }
         }
 
-        private GenericRepository<OPNMAGEN> _OPNMAGEN;
-        public IGenericRepository<OPNMAGEN> OPNMAGEN_Repo
+        private GenericRepository<Agent> _OPNMAGEN;
+        public IGenericRepository<Agent> Agent_Repo
         {
-            get 
+            get
             {
                 if (this._OPNMAGEN == null)
                 {
-                    this._OPNMAGEN = new GenericRepository<OPNMAGEN>(context);
+                    this._OPNMAGEN = new GenericRepository<Agent>(ContextCis);
                 }
                 return this._OPNMAGEN;
             }
@@ -60,7 +79,7 @@ namespace TFundSolution.Services
             {
                 if (this._LOG_SYSTEM == null)
                 {
-                    this._LOG_SYSTEM = new GenericRepository<LOG_SYSTEM>(context);
+                    this._LOG_SYSTEM = new GenericRepository<LOG_SYSTEM>(ContextCis);
                 }
                 return this._LOG_SYSTEM;
             }
@@ -73,7 +92,7 @@ namespace TFundSolution.Services
             {
                 if (this._FEE_SETTING == null)
                 {
-                    this._FEE_SETTING = new GenericRepository<FEE_SETTING>(context);
+                    this._FEE_SETTING = new GenericRepository<FEE_SETTING>(ContextCis);
                 }
                 return this._FEE_SETTING;
             }
@@ -86,12 +105,130 @@ namespace TFundSolution.Services
             {
                 if (this._FEE_SETTING_ONGO == null)
                 {
-                    this._FEE_SETTING_ONGO = new GenericRepository<FEE_SETTING_ONGO>(context);
+                    this._FEE_SETTING_ONGO = new GenericRepository<FEE_SETTING_ONGO>(ContextCis);
                 }
                 return this._FEE_SETTING_ONGO;
             }
         }
 
+        private GenericRepository<FEE_SETTING_TBANK> _FEE_SETTING_TBANK;
+        public IGenericRepository<FEE_SETTING_TBANK> FEE_SETTING_TBANK_Repo
+        {
+            get
+            {
+                if (this._FEE_SETTING_TBANK == null)
+                {
+                    this._FEE_SETTING_TBANK = new GenericRepository<FEE_SETTING_TBANK>(ContextCis);
+                }
+                return this._FEE_SETTING_TBANK;
+            }
+        }
+
+        private GenericRepository<FEE_SETTING_ONPAY> _FEE_SETTING_ONPAY;
+        public IGenericRepository<FEE_SETTING_ONPAY> FEE_SETTING_ONPAY_Repo
+        {
+            get
+            {
+                if (this._FEE_SETTING_ONPAY == null)
+                {
+                    this._FEE_SETTING_ONPAY = new GenericRepository<FEE_SETTING_ONPAY>(ContextCis);
+                }
+                return this._FEE_SETTING_ONPAY;
+            }
+        }
+
+        private GenericRepository<FEE_SETTING_YEAR> _FEE_SETTING_YEAR;
+        public IGenericRepository<FEE_SETTING_YEAR> FEE_SETTING_YEAR_Repo
+        {
+            get
+            {
+                if (this._FEE_SETTING_YEAR == null)
+                {
+                    this._FEE_SETTING_YEAR = new GenericRepository<FEE_SETTING_YEAR>(ContextCis);
+                }
+                return this._FEE_SETTING_YEAR;
+            }
+        }
+
+        private GenericRepository<FEE_SETTING_ONLEVEL> _FEE_SETTING_ONLEVEL;
+        public IGenericRepository<FEE_SETTING_ONLEVEL> FEE_SETTING_ONLEVEL_Repo
+        {
+            get
+            {
+                if (this._FEE_SETTING_ONLEVEL == null)
+                {
+                    this._FEE_SETTING_ONLEVEL = new GenericRepository<FEE_SETTING_ONLEVEL>(ContextCis);
+                }
+                return this._FEE_SETTING_ONLEVEL;
+            }
+        }
+
+
+        private GenericRepository<FEE_SETTING_UPFRONT> _FEE_SETTING_UPFRONT;
+        public IGenericRepository<FEE_SETTING_UPFRONT> FEE_SETTING_UPFRONT_Repo
+        {
+            get
+            {
+                if (this._FEE_SETTING_UPFRONT == null)
+                {
+                    this._FEE_SETTING_UPFRONT = new GenericRepository<FEE_SETTING_UPFRONT>(ContextCis);
+                }
+                return this._FEE_SETTING_UPFRONT;
+            }
+        }
+
+        private GenericRepository<FEE_UPFRONT_ONLEVEL> _FEE_UPFRONT_ONLEVEL;
+        public IGenericRepository<FEE_UPFRONT_ONLEVEL> FEE_UPFRONT_ONLEVEL_Repo
+        {
+            get
+            {
+                if (this._FEE_UPFRONT_ONLEVEL == null)
+                {
+                    this._FEE_UPFRONT_ONLEVEL = new GenericRepository<FEE_UPFRONT_ONLEVEL>(ContextCis);
+                }
+                return this._FEE_UPFRONT_ONLEVEL;
+            }
+        }
+
+        private GenericRepository<OPRTNAV> _OPRTNAV_Repo;
+        public IGenericRepository<OPRTNAV> OPRTNAV_Repo
+        {
+            get
+            {
+                if (this._OPRTNAV_Repo == null)
+                {
+                    this._OPRTNAV_Repo = new GenericRepository<OPRTNAV>(ContextOper);
+                }
+                return this._OPRTNAV_Repo;
+            }
+        }
+
+        private GenericRepository<V_CALENDAR> _V_CALENDAR_Repo;
+        public IGenericRepository<V_CALENDAR> V_CALENDAR_Repo
+        {
+            get
+            {
+                if (this._V_CALENDAR_Repo == null)
+                {
+                    this._V_CALENDAR_Repo = new GenericRepository<V_CALENDAR>(ContextOper);
+                }
+                return this._V_CALENDAR_Repo;
+            }
+
+        }
+
+        private GenericRepository<DailyNav> _V_W_NAV_Repo_Repo;
+        public IGenericRepository<DailyNav> V_W_NAV_Repo
+        {
+            get
+            {
+                if (this._V_W_NAV_Repo_Repo == null)
+                {
+                    this._V_W_NAV_Repo_Repo = new GenericRepository<DailyNav>(ContextOper);
+                }
+                return this._V_W_NAV_Repo_Repo;
+            }
+        }
 
 
         //public GenericRepository<T> getGeneric<T>() where T : class
@@ -105,7 +242,8 @@ namespace TFundSolution.Services
         {
             try
             {
-                context.SaveChanges();
+                ContextCis.SaveChanges();
+                ContextOper.SaveChanges();
             }
             catch (DbEntityValidationException e)
             {
@@ -129,7 +267,32 @@ namespace TFundSolution.Services
         {
             try
             {
-                context.SaveChanges(true);
+                ContextCis.SaveChanges(true);
+            }
+            catch (DbEntityValidationException e)
+            {
+                foreach (var eve in e.EntityValidationErrors)
+                {
+                    System.Diagnostics.Debug.WriteLine("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                        eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                    foreach (var ve in eve.ValidationErrors)
+                    {
+                        System.Diagnostics.Debug.WriteLine("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
+                                            ve.PropertyName,
+                                            eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
+                                            ve.ErrorMessage);
+                    }
+                }
+                throw;
+            }
+
+        }
+
+        public void SaveBulk()
+        {
+            try
+            {
+                ContextCis.BulkSaveChanges();
             }
             catch (DbEntityValidationException e)
             {
@@ -158,7 +321,7 @@ namespace TFundSolution.Services
             {
                 if (disposing)
                 {
-                    context.Dispose();
+                    ContextCis.Dispose();
                 }
             }
             this.disposed = true;
@@ -170,33 +333,39 @@ namespace TFundSolution.Services
             GC.SuppressFinalize(this);
         }
 
-       
+        public int ExecuteSql(string cmd, IEnumerable<OracleParameter> para)
+        {
+
+            //contextCis.FeeAgentDaily.Where(m => DbFunctions.TruncateTime(m.FEE_DATE) == DbFunctions.TruncateTime(new DateTime(2018,10,31))).DeleteFromQuery();
+            return 1;
+        }
+
     }
 
     public class UnitOfWorkDummyTFund : IUnitOfWork
     {
 
-        private DummyGenericRepository<OPNCONTL> _OPNCONTL;
-        public IGenericRepository<OPNCONTL> OPNCONTL_Repo
+        private DummyGenericRepository<Fund> _OPNCONTL;
+        public IGenericRepository<Fund> Fund_Repo
         {
             get
             {
                 if (this._OPNCONTL == null)
                 {
-                    this._OPNCONTL = new DummyGenericRepository<OPNCONTL>();
+                    this._OPNCONTL = new DummyGenericRepository<Fund>();
                 }
                 return this._OPNCONTL;
             }
         }
 
-        private DummyGenericRepository<OPNMAGEN> _OPNMAGEN;
-        public IGenericRepository<OPNMAGEN> OPNMAGEN_Repo
+        private DummyGenericRepository<Agent> _OPNMAGEN;
+        public IGenericRepository<Agent> Agent_Repo
         {
             get
             {
                 if (this._OPNMAGEN == null)
                 {
-                    this._OPNMAGEN = new DummyGenericRepository<OPNMAGEN>();
+                    this._OPNMAGEN = new DummyGenericRepository<Agent>();
                 }
                 return this._OPNMAGEN;
             }
@@ -228,15 +397,130 @@ namespace TFundSolution.Services
             }
         }
 
-     
+        private DummyGenericRepository<FEE_SETTING_TBANK> _FEE_SETTING_TBANK_Repo;
+        public IGenericRepository<FEE_SETTING_TBANK> FEE_SETTING_TBANK_Repo
+        {
+            get
+            {
+                if (this._FEE_SETTING_TBANK_Repo == null)
+                {
+                    this._FEE_SETTING_TBANK_Repo = new DummyGenericRepository<FEE_SETTING_TBANK>();
+                }
+                return this._FEE_SETTING_TBANK_Repo;
+            }
+        }
+
+        private DummyGenericRepository<FEE_SETTING_ONPAY> _FEE_SETTING_ONPAY_Repo;
+        public IGenericRepository<FEE_SETTING_ONPAY> FEE_SETTING_ONPAY_Repo
+        {
+            get
+            {
+                if (this._FEE_SETTING_ONPAY_Repo == null)
+                {
+                    this._FEE_SETTING_ONPAY_Repo = new DummyGenericRepository<FEE_SETTING_ONPAY>();
+                }
+                return this._FEE_SETTING_ONPAY_Repo;
+            }
+        }
+
+        private DummyGenericRepository<FEE_SETTING_YEAR> _FEE_SETTING_YEAR_Repo;
+        public IGenericRepository<FEE_SETTING_YEAR> FEE_SETTING_YEAR_Repo
+        {
+            get
+            {
+                if (this._FEE_SETTING_YEAR_Repo == null)
+                {
+                    this._FEE_SETTING_YEAR_Repo = new DummyGenericRepository<FEE_SETTING_YEAR>();
+                }
+                return this._FEE_SETTING_YEAR_Repo;
+            }
+        }
+
+        private DummyGenericRepository<FEE_SETTING_ONLEVEL> _FEE_SETTING_ONLEVEL_Repo;
+        public IGenericRepository<FEE_SETTING_ONLEVEL> FEE_SETTING_ONLEVEL_Repo
+        {
+            get
+            {
+                if (this._FEE_SETTING_ONLEVEL_Repo == null)
+                {
+                    this._FEE_SETTING_ONLEVEL_Repo = new DummyGenericRepository<FEE_SETTING_ONLEVEL>();
+                }
+                return this._FEE_SETTING_ONLEVEL_Repo;
+            }
+        }
+
+        private DummyGenericRepository<FEE_SETTING_UPFRONT> _FEE_SETTING_UPFRONT_Repo;
+        public IGenericRepository<FEE_SETTING_UPFRONT> FEE_SETTING_UPFRONT_Repo
+        {
+            get
+            {
+                if (this._FEE_SETTING_UPFRONT_Repo == null)
+                {
+                    this._FEE_SETTING_UPFRONT_Repo = new DummyGenericRepository<FEE_SETTING_UPFRONT>();
+                }
+                return this._FEE_SETTING_UPFRONT_Repo;
+            }
+        }
+
+        private DummyGenericRepository<FEE_UPFRONT_ONLEVEL> _FEE_UPFRONT_ONLEVEL_Repo;
+        public IGenericRepository<FEE_UPFRONT_ONLEVEL> FEE_UPFRONT_ONLEVEL_Repo
+        {
+            get
+            {
+                if (this._FEE_UPFRONT_ONLEVEL_Repo == null)
+                {
+                    this._FEE_UPFRONT_ONLEVEL_Repo = new DummyGenericRepository<FEE_UPFRONT_ONLEVEL>();
+                }
+                return this._FEE_UPFRONT_ONLEVEL_Repo;
+            }
+        }
+
+        private DummyGenericRepository<OPRTNAV> _OPRTNAV_Repo;
+        public IGenericRepository<OPRTNAV> OPRTNAV_Repo
+        {
+            get
+            {
+                if (this._OPRTNAV_Repo == null)
+                {
+                    this._OPRTNAV_Repo = new DummyGenericRepository<OPRTNAV>();
+                }
+                return this._OPRTNAV_Repo;
+            }
+        }
+
+        private DummyGenericRepository<V_CALENDAR> _V_CALENDAR_Repo;
+        public IGenericRepository<V_CALENDAR> V_CALENDAR_Repo
+        {
+            get
+            {
+                if (this._V_CALENDAR_Repo == null)
+                {
+                    this._V_CALENDAR_Repo = new DummyGenericRepository<V_CALENDAR>();
+                }
+                return this._V_CALENDAR_Repo;
+            }
+
+        }
+
+        private DummyGenericRepository<DailyNav> _V_W_NAV_Repo_Repo;
+        public IGenericRepository<DailyNav> V_W_NAV_Repo
+        {
+            get
+            {
+                if (this._V_W_NAV_Repo_Repo == null)
+                {
+                    this._V_W_NAV_Repo_Repo = new DummyGenericRepository<DailyNav>();
+                }
+                return this._V_W_NAV_Repo_Repo;
+            }
+        }
 
         public void Save()
         {
             //throw new NotImplementedException();
         }
 
-
-        public void SaveWithLog()
+        public void SaveBulk()
         {
             //throw new NotImplementedException();
         }
@@ -261,6 +545,168 @@ namespace TFundSolution.Services
             GC.SuppressFinalize(this);
         }
 
+        public void SaveWithLog()
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public int ExecuteSql(string cmd, IEnumerable<OracleParameter> para)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public interface IGenericUnitOfWork : IDisposable
+    {
+        IGenericRepository<TEntity> RepositoryCis<TEntity>() where TEntity : class;
+        IGenericRepository<TEntity> ResipotoryOper<TEntity>() where TEntity : class;
+        IGenericRepository<TEntity> ResipotorySas<TEntity>() where TEntity : class;
+
+        void Save();
+        void SaveWithLog();
+        void SaveBulk();
+        int ExecuteSql(string cmd, IEnumerable<OracleParameter> para);
+        IEnumerable<T> SqlQuery<T>(string cmd, IEnumerable<OracleParameter> para);
+
+    }
+
+    public class GenericUnitOfWork : IGenericUnitOfWork
+    {
+
+        private DbContext ContextCis;
+        private DbContext ContextOper;
+        private DbContext ContextSas;
+
+        public GenericUnitOfWork(DbContext contextCis, DbContext contextOper, DbContext contextSas)
+        {
+            ContextCis = contextCis;
+            ContextOper = contextOper;
+            ContextSas = contextSas;
+        }
+
+        private Dictionary<Type, Object> repositories = new Dictionary<Type, object>();
+        public IGenericRepository<TEntity> RepositoryCis<TEntity>() where TEntity : class
+        {
+            if (repositories.Keys.Contains(typeof(TEntity)) == true)
+            {
+                return repositories[typeof(TEntity)] as IGenericRepository<TEntity>;
+            }
+
+            IGenericRepository<TEntity> resipotory = new GenericRepository<TEntity>(ContextCis);
+            repositories.Add(typeof(TEntity), resipotory);
+            return resipotory;
+        }
+        public IGenericRepository<TEntity> ResipotoryOper<TEntity>() where TEntity : class
+        {
+            if (repositories.Keys.Contains(typeof(TEntity)) == true)
+            {
+                return repositories[typeof(TEntity)] as IGenericRepository<TEntity>;
+            }
+
+            IGenericRepository<TEntity> resipotory = new GenericRepository<TEntity>(ContextOper);
+            repositories.Add(typeof(TEntity), resipotory);
+            return resipotory;
+        }
+        public IGenericRepository<TEntity> ResipotorySas<TEntity>() where TEntity : class
+        {
+            if (repositories.Keys.Contains(typeof(TEntity)) == true)
+            {
+                return repositories[typeof(TEntity)] as IGenericRepository<TEntity>;
+            }
+
+            IGenericRepository<TEntity> resipotory = new GenericRepository<TEntity>(ContextSas);
+            repositories.Add(typeof(TEntity), resipotory);
+            return resipotory;
+        }
+
+        public void Save()
+        {
+            try
+            {
+                ContextCis.SaveChanges();
+                //contextOper.SaveChanges();
+            }
+            catch (DbEntityValidationException e)
+            {
+                foreach (var eve in e.EntityValidationErrors)
+                {
+                    System.Diagnostics.Debug.WriteLine("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                        eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                    foreach (var ve in eve.ValidationErrors)
+                    {
+                        System.Diagnostics.Debug.WriteLine("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
+                                            ve.PropertyName,
+                                            eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
+                                            ve.ErrorMessage);
+                    }
+                }
+                throw;
+            }
+
+            //   context.SaveChanges();
+        }
+
+        public void SaveBulk()
+        {
+            try
+            {
+                ContextCis.BulkSaveChanges();
+            }
+            catch (DbEntityValidationException e)
+            {
+                foreach (var eve in e.EntityValidationErrors)
+                {
+                    System.Diagnostics.Debug.WriteLine("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                        eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                    foreach (var ve in eve.ValidationErrors)
+                    {
+                        System.Diagnostics.Debug.WriteLine("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
+                                            ve.PropertyName,
+                                            eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
+                                            ve.ErrorMessage);
+                    }
+                }
+                throw;
+            }
+        }
+
+        private bool disposed = false;
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!this.disposed)
+            {
+                if (disposing)
+                {
+                    ContextCis.Dispose();
+                    ContextOper.Dispose();
+                }
+            }
+            this.disposed = true;
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        public void SaveWithLog()
+        {
+            throw new NotImplementedException();
+        }
+
+        public int ExecuteSql(string cmd, IEnumerable<OracleParameter> para)
+        {
+            ContextCis.Database.ExecuteSqlCommand(cmd, para.ToArray());
+            return 1;
+        }
+
+        public IEnumerable<T> SqlQuery<T>(string cmd, IEnumerable<OracleParameter> para)
+        {
+            return ContextCis.Database.SqlQuery<T>(cmd, para.ToArray()).ToList();
+        }
     }
 
 
