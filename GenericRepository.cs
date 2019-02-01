@@ -30,16 +30,24 @@ namespace TFundSolution.Services
 
         void Insert(TEntity entity);
 
+        /// <summary>
+        /// Manual
+        /// </summary>
+        /// <param name="entities"></param>
         void InsertBulkManual(IEnumerable<TEntity> entities);
 
+        /// <summary>
+        /// Manual
+        /// </summary>
+        /// <param name="entities"></param>
         void InsertBulk(IEnumerable<TEntity> entities);
 
-        void InsertBulkAndSave(IEnumerable<TEntity> entities);
+        //void InsertBulkAndSave(IEnumerable<TEntity> entities);
 
         void Update(TEntity entityToUpdate);
 
         /// <summary>
-        ///  navigation property ควรเป้น null ให้หมด
+        ///  navigation property ไม่จำเป็นต้องตัดทิ้ง
         /// </summary>
         /// <param name="entityToUpdate"></param>
         void UpdateWithLog(TEntity entityToUpdate);
@@ -48,6 +56,10 @@ namespace TFundSolution.Services
 
         void Delete(TEntity entityToDelete);
 
+        /// <summary>
+        /// Manual Delete 
+        /// </summary>
+        /// <param name="entities"></param>
         void DeleteBulk(IEnumerable<TEntity> entities);
 
         IEnumerable<TEntity> SqlQuery(string cmd, OracleParameter[] para);
@@ -107,10 +119,10 @@ namespace TFundSolution.Services
         {
             IQueryable<TEntity> query = dbSet;
            
-                return query;
+            return query;
         }
 
-        public virtual IEnumerable<TEntity> GetAll()
+           public virtual IEnumerable<TEntity> GetAll()
         {
             return dbSet.ToList();
         }
@@ -141,10 +153,10 @@ namespace TFundSolution.Services
             context.ChangeTracker.DetectChanges();
         }
 
-        public void InsertBulkAndSave(IEnumerable<TEntity> entities)
-        {
-            context.BulkInsert<TEntity>(entities, options => options.IncludeGraph = true);
-        }
+        //public void InsertBulkAndSave(IEnumerable<TEntity> entities)
+        //{
+        //    context.BulkInsert<TEntity>(entities, options => options.IncludeGraph = true);
+        //}
 
         public virtual void DeleteById(object id)
         {
@@ -174,7 +186,8 @@ namespace TFundSolution.Services
 
         public virtual void UpdateWithLog(TEntity entityToUpdate)
         {
-            TEntity newObject = entityToUpdate.CloneObject<TEntity>();
+            TEntity newObject = (TEntity)context.Entry(entityToUpdate)
+                                              .CurrentValues.ToObject();
 
             dbSet.Attach(entityToUpdate);
             context.Entry(entityToUpdate).Reload();
@@ -202,7 +215,6 @@ namespace TFundSolution.Services
         {
             throw new NotImplementedException();
         }
-
 
     }
     
@@ -313,16 +325,18 @@ namespace TFundSolution.Services
         }
 
 
-        public void InsertBulkAndSave(IEnumerable<TEntity> entities)
-        {
-            throw new NotImplementedException();
-        }
+        //public void InsertBulkAndSave(IEnumerable<TEntity> entities)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
 
         public void InsertBulkManual(IEnumerable<TEntity> entities)
         {
             throw new NotImplementedException();
         }
+
+
     }
 }
 

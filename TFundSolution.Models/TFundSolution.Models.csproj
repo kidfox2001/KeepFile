@@ -1,0 +1,138 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{C5BE5768-06F7-4E32-8CB1-73ADDC971FFC}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TFundSolution.Models</RootNamespace>
+    <AssemblyName>TFundSolution.Models</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="PagedList, Version=1.17.0.0, Culture=neutral, PublicKeyToken=abbb863e9397c5e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\PagedList.1.17.0.0\lib\net40\PagedList.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="PagedList.Mvc, Version=4.5.0.0, Culture=neutral, PublicKeyToken=abbb863e9397c5e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\PagedList.Mvc.4.5.0.0\lib\net40\PagedList.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Fees\FeeUpFrontAgent.cs" />
+    <Compile Include="Fees\FeeUpFrontReward.cs" />
+    <Compile Include="Fees\FEE_SETTING_UPFRONT_CHANNEL.cs" />
+    <Compile Include="Fees\FEE_SETTING_UPFRONT_TWEALTH.cs" />
+    <Compile Include="Fees\FeeUpFrontMarketing.cs" />
+    <Compile Include="Fees\FEE_SETTING_UPFRONT_ONPAY.cs" />
+    <Compile Include="OPNMFEECONUPFRONT.cs" />
+    <Compile Include="SASMORDERTYPE.cs" />
+    <Compile Include="Views\CheckBoxListItem.cs" />
+    <Compile Include="EnumActionType.cs" />
+    <Compile Include="EnumDataStatus.cs" />
+    <Compile Include="Fees\AgentBfValue .cs" />
+    <Compile Include="Fees\FeeAgentDaily.cs" />
+    <Compile Include="Fees\FeeMarketing.cs" />
+    <Compile Include="Fees\FeeOngoAgent.cs" />
+    <Compile Include="Fees\FeeOngoMarketing.cs" />
+    <Compile Include="Fees\FeeOngoOnYear.cs" />
+    <Compile Include="Fees\FeeOngoReward.cs" />
+    <Compile Include="Fees\FEE_SETTING.cs" />
+    <Compile Include="Fees\FEE_SETTING_ONGO.cs" />
+    <Compile Include="Fees\FEE_SETTING_ONLEVEL.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Fees\FEE_SETTING_ONPAY.cs" />
+    <Compile Include="Fees\FEE_SETTING_TBANK.cs" />
+    <Compile Include="Fees\FEE_SETTING_UPFRONT.cs" />
+    <Compile Include="Fees\FEE_SETTING_YEAR.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Fees\FEE_SETTING_UPFRONT_ONLEVEL.cs" />
+    <Compile Include="LOG_COLUMN.cs" />
+    <Compile Include="LOG_ROW.cs" />
+    <Compile Include="LOG_SYSTEM.cs" />
+    <Compile Include="OPNCONTL.cs" />
+    <Compile Include="OPNMAGEN.cs" />
+    <Compile Include="OPNMFEEAGENT.cs" />
+    <Compile Include="OPNMFEEMKT.cs" />
+    <Compile Include="OPNMFEEONPAY.cs" />
+    <Compile Include="OPNMFEEREWARD.cs" />
+    <Compile Include="OPNMMAKT.cs" />
+    <Compile Include="OPNTTRAN.cs" />
+    <Compile Include="OPRHBUY.cs" />
+    <Compile Include="OPRHSELL.cs" />
+    <Compile Include="OPRTNAV.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SASMFGRP.cs" />
+    <Compile Include="Views\Fees\ViewModelExcelFeeAgent.cs" />
+    <Compile Include="Views\Fees\ViewModelReportFee.cs" />
+    <Compile Include="Views\Fees\ViewModelReportFeeOngoAgentDaily.cs" />
+    <Compile Include="Views\Fees\ViewModelReportFeeOngoIIAMarketing.cs" />
+    <Compile Include="Views\Fees\ViewModelReportFeeOngoMarketing.cs" />
+    <Compile Include="Views\Fees\ViewModelReportFeeOngoMarketingDaily.cs" />
+    <Compile Include="Views\Fees\ViewModelResultReward.cs" />
+    <Compile Include="Views\Fees\ViewModelTransactionBuyWithTWealth.cs" />
+    <Compile Include="V_CALENDAR.cs" />
+    <Compile Include="V_MKT_BRANCH.cs" />
+    <Compile Include="V_W_NAV.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TFundSolution.Utils\TFundSolution.Utils.csproj">
+      <Project>{20b4f697-0971-44d1-ae47-118ca1423868}</Project>
+      <Name>TFundSolution.Utils</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\PagedList.css" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
