@@ -1,0 +1,711 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+    <title></title>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <!--<script src="scripts/jquery-1.9.1.min.js"></script>-->
+    <script src="scripts/jquery-ui-1.9.2.custom.min.js"></script>
+    <script src="scripts/json_parse.js"></script>
+    <script src="scripts/jquery.touchSwipe.min.js"></script>
+    <script src="scripts/jqGlobal.js"></script>
+    <script src="js/bootstrap-checkbox.js"></script>
+
+
+    <link href="styles/jquery-ui-1.9.2.custom.min.css" rel="stylesheet" />
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+
+    <style type="text/css">
+        /*#DivContainer
+        {
+            width: 100%;
+        }
+
+        #DivLeft
+        {
+            width: 100%;
+        }*/
+
+        #DivLeftContainerInner {
+            padding: 8px;
+        }
+
+        .checkboxLabel {
+            padding-left: 10px;
+        }
+
+        /*#DivMatch
+        {
+            position: fixed;
+            top: 5%;
+            right: 5%;
+        }*/
+
+        body {
+            background-color: #c2dde6;
+        }
+
+        .input-group-addon {
+            background-color: #bccbde;
+        }
+
+        .loader {
+            position: absolute;
+            left: 55%;
+            top: 50%;
+            z-index: 1;
+            width: 150px;
+            height: 150px;
+            margin: -75px 0 0 -75px;
+            border: 16px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 16px solid #bccbde;
+            border-bottom: 16px solid #bccbde;
+            width: 120px;
+            height: 120px;
+            -webkit-animation: spin 2s linear infinite;
+            animation: spin 2s linear infinite;
+        }
+
+        @media (min-width:970px) {
+            .loader {
+                left: 50%;
+            }
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /*.badge-c
+        {
+            padding: 1px 9px 2px;
+            font-size: 12.025px;
+            font-weight: bold;
+            white-space: nowrap;
+            color: #ffffff;
+            background-color: #999999;
+            -webkit-border-radius: 9px;
+            -moz-border-radius: 9px;
+            border-radius: 9px;
+        }
+
+            .badge-c:hover
+            {
+                color: #ffffff;
+                text-decoration: none;
+                cursor: pointer;
+            }
+
+        .badge-c-error
+        {
+            background-color: #b94a48;
+        }
+
+            .badge-c-error:hover
+            {
+                background-color: #953b39;
+            }*/
+
+        .badge-c-warning {
+            background-color: #f89406;
+        }
+
+            .badge-c-warning:hover {
+                background-color: #c67605;
+            }
+
+        .badge-c-success {
+            background-color: #468847;
+        }
+
+            .badge-c-success:hover {
+                background-color: #356635;
+            }
+
+        .badge-c-info {
+            background-color: #3a87ad;
+        }
+
+            .badge-c-info:hover {
+                background-color: #2d6987;
+                cursor: pointer;
+            }
+
+        .badge-c-inverse {
+            background-color: #333333;
+        }
+
+            .badge-c-inverse:hover {
+                background-color: #1a1a1a;
+            }
+    </style>
+</head>
+
+<body style="height:100vh">
+
+    <!--Loader-->
+    <div class="loader"></div>
+
+    <!--navbar-->
+    <nav id="DivBar" class="navbar navbar-default navbar-fixed-bottom">
+        <div class="container">
+            <div class="navbar-text">
+                <div class="input-group">
+                    <!--  <span class="input-group-addon" id="basic-addon1"><b>Sle Project</b></span>-->
+                    <input id="txtSearch" type="text" class="form-control" placeholder="Enter Query Symptoms Text">
+                    <span id="spanPicSearch" class="input-group-addon">
+                        <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                    </span>
+                    <!--Diseases match alert-->
+                    <span id="DivMatch" class="input-group-btn" style="padding-left: 10px; display: none; ">
+                        <button class="btn btn-warning" type="button" style=" width:120px;">Diseases <span id="BadgeMatch" class="badge">0</span></button>
+                    </span>
+
+
+                    <!--<div id="DivMatch">
+                        <button class="btn btn-warning" type="button" data-toggle="modal" data-target="#myModal">
+                            Diseases <span class="badge">0</span>
+                        </button>
+                    </div>-->
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row">
+            <!-- Accordion-->
+
+            <div class="col-md-8 col-sm-12">
+                <div id="DivLeftContainerInner">
+                </div>
+            </div>
+
+            <!-- div Diseases Report-->
+            <div class="col-md-4 col-sm-12 hidden-xs hidden-sm" id="DivReport" style="padding-top: 10px">
+                <ul class="list-group">
+                    <li class="list-group-item active" style="display:none">Matched Diseases</li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Matched Diseases</h4>
+                    <div id="DivPattern">
+                        <span class="badge badge-c-info">3/4</span>
+                        <span class="badge badge-c-info">3/4</span>
+                    </div>
+
+                </div>
+                <div class="modal-body">
+
+                    <ul id="UlGroupSymptom" class="list-group">
+
+                        <li class="list-group-item list-group-item-success"> <span class="glyphicon glyphicon-check"></span>  Mucocutaneous (Discoid  rash)</li>
+                        <li class="list-group-item list-group-item-success"> <span class="glyphicon glyphicon-check"></span>  Renal (Proteinuria)</li>
+                        <li class="list-group-item list-group-item-secondary">Renal (Active urinary, cellular cast)</li>
+
+                    </ul>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                    <!--<button type="button" class="btn btn-primary">Save changes</button>-->
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script>
+        var symptoms = []; // มีรายละเอียดของกลุ่ม อาการ และ อาการไว้สร้างเมนู
+        var listSelectCheckBox = []; // เก็บ id อาการที่เลือกไว้
+        var listDiseases = []; // เก็บโรคที่ใช่
+        var urlService = pathServer + "/WebService/DiseaseService.asmx/"; // relative path
+        var badgeText = "";
+
+        $(function () {
+
+            $("#DivMatch").click(function () {
+                reportDiseaseHandler(this);
+            });
+            $("#txtSearch").focus(function () {
+                $("#spanPicSearch").css("background-color", "#edbb9c");
+                $("#spanPicSearch span").toggleClass("glyphicon-remove").toggleClass("glyphicon-search");
+            });
+            $("#txtSearch").blur(function () {
+                $("#spanPicSearch").css("background-color", "#bccbde");
+                $("#spanPicSearch span").toggleClass("glyphicon-search").toggleClass("glyphicon-remove");
+                // $("#spanPicSearch span").toggleClass("glyphicon-search");
+            });
+
+            $("body").swipe({
+                swipe: function (event, direction, distance, duration, fingerCount, fingerData) {
+                    if ($("#DivMatch").css('display') != 'none') {
+                        if (direction == 'left' & duration <= 150) {
+                            swipeLeftHandler();
+                        };
+                        if (direction == 'right' & duration <= 150) {
+                            swipeRightHandler();
+                        };
+                    }
+                },
+            });
+
+            //ลองเรียก
+            //var input = JSON.stringify({ 'Create': 'xxx' });
+            $.ajax({
+                type: "POST",
+                url: urlService + "GetAllSymptomDetail",
+                contentType: "application/json; charset=utf-8",
+                //data: input,
+                //dataType: "json",
+                success: function (msg) {
+                    var data = msg.d;
+                    //  alert(data[0].group_name);
+
+                    $(".loader").hide();
+                    symptoms = data;
+                    renderDisplay()
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert(textStatus);
+                }
+            });
+        });
+
+        /// ฟังช้่นคุมเรื่อง swipe ปัดซ้าย
+        /// input |
+        /// output |
+        function swipeLeftHandler() {
+            if ($("#DivLeftContainerInner").css("display") != 'none') {
+                $("#DivMatch").trigger("click");
+            };
+        }
+
+        /// ฟังช้่นคุมเรื่อง swipe ปัดขวา
+        /// input |
+        /// output |
+        function swipeRightHandler() {
+            if ($("#DivLeftContainerInner").css("display") == 'none') {
+                $("#DivMatch").trigger("click");
+            };
+        }
+
+        /// ฟังช้่นคุมเรื่อง การกดปุ่ม alert disease
+        /// input |
+        /// output |
+        function reportDiseaseHandler(me) {
+            var effect = 'slide';
+            var options = { direction: 'left' };
+            var duration = 500;
+
+            if ($("#DivLeftContainerInner").css("display") != 'none') {
+                // เรียก div รายงานผล
+                $("#DivLeftContainerInner").toggle(effect, options, duration).promise().done(function () {
+                    $("#DivReport").removeClass("hidden-xs").removeClass("hidden-sm").css("display", "none");
+                    $("#DivReport").toggle(effect, { direction: 'right' }, duration);
+                });
+
+                badgeText = $(me).find(".btn").html();
+                $(me).find(".btn").text("Conditions");
+                // $(this).find(".btn").append(badge);
+            }
+
+            if ($("#DivLeftContainerInner").css("display") == 'none') {
+                // เรียก div อาการ
+                $("#DivReport").toggle(effect, { direction: 'right' }, duration).promise().done(function () {
+                    $("#DivLeftContainerInner").toggle(effect, { direction: 'left' }, duration);
+                });
+
+                $(me).find(".btn").html(badgeText);
+            }
+        }
+
+        /// ฟังช้่นเรียกให้สร้างภาพ
+        /// input |
+        /// output |
+        function renderDisplay() {
+            loadData(symptoms);
+
+            $("#txtSearch").bind("input", function () {
+                searchResult($(this).val());
+            });
+            $("#spanPicSearch").bind("click", function () {
+                $("#txtSearch").val("");
+                searchResult($(this).val());
+            });
+            $("#DivReport li,.list-group-item").show();
+
+        }
+
+
+        /// ฟั่งชั่นค้นหาคำจาก key word ที่ต้องการนำมาสร้างใหม่
+        /// input | text = key word ที่ต้องการจะหา
+        /// output |
+        function searchResult(text) {
+            if (text !== "") {
+                var listSymptomsSearchFound = [];
+                var newFoundResult = [];
+                $.each(symptoms, function (key, value) {
+                    $.each(value.Symptoms, function (key, value) {
+                        if (value.symptom_name.toUpperCase().indexOf(text.toUpperCase()) > -1) {
+                            listSymptomsSearchFound.push(value);
+                        }
+                    })
+                })
+
+                $.each(symptoms, function (key, value) {
+                    var detailSymptoms = value.Symptoms;
+                    var foundItems = detailSymptoms.filter(function (el) {
+                        return listSymptomsSearchFound.indexOf(el) !== -1
+                    });
+
+                    if (foundItems.length > 0) {
+                        var newGroupSymptoms = Object.assign({}, value);
+                        newGroupSymptoms.Symptoms = foundItems
+                        newFoundResult.push(newGroupSymptoms);
+                    }
+                })
+                removeAccordion();
+                loadData(newFoundResult);
+                accordionExpandAll();
+            }
+            else {
+                removeAccordion();
+                loadData(symptoms);
+            }
+
+            manageCheck();
+        };
+
+        /// รับดาต้าเผื่อนำมาสร้าง accordion
+        /// input | datas = GroupSymptomView
+        /// output |
+        function loadData(datas) {
+            var accordion = $('<div></div>').attr("id", "accordion").css("padding-bottom", "50px");
+
+            $.each(datas, function (key, value) {
+                var header = $('<h3></h3>');
+                header.text(value.group_name);
+                var detail = $('<div></div>');
+
+                // เรียงลำดับ
+                var dataSort = value.Symptoms.sort(function (a, b) {
+                    var nameA = a.symptom_name.toUpperCase(); // ignore upper and lowercase
+                    var nameB = b.symptom_name.toUpperCase(); // ignore upper and lowercase
+                    if (nameA < nameB) {
+                        return -1;
+                    }
+                    if (nameA > nameB) {
+                        return 1;
+                    }
+
+                    // names must be equal
+                    return 0;
+                });
+
+                $.each(dataSort, function (key, value) {
+                    var row = $('<div></div>').addClass("row")
+                                              .addClass("text-nowrap")
+                                              .css("height", "30px");
+                    var checkbox = $('<input />').attr("type", "checkbox")
+                                                 .attr("data-switch-always", true)
+                                                 .attr("data-group-cls", "btn-group-xs");
+                    checkbox.attr("value", value.symptom_name);
+                    checkbox.data("id_sd", value.id_sd);
+                    row.append(checkbox);
+                    var span = $('<span class="checkboxLabel"></span>').text(value.symptom_name);
+                    row.append(span);
+                    detail.append(row);
+                })
+                accordion.append(header).append(detail);
+            })
+
+            $("#DivLeftContainerInner").append(accordion);
+            accordion.accordion({ collapsible: true, active: false, autoHeight: false, navigation: true });
+
+            $(':checkbox').checkboxpicker().on('change', function () {
+                keepSelect($(this));
+            });
+
+        };
+
+        /// ฟังชั่นกาง accordion
+        /// input |
+        /// output |
+        function accordionExpandAll() {
+            var contentAreas = $('#accordion .ui-accordion-content ').hide();
+            // when panels open or close, check to see if they're all open
+            contentAreas.on({
+                // whenever we open a panel, check to see if they're all open
+                // if all open, swap the button to collapser
+                show: function () {
+                    var isAllOpen = !contentAreas.is(':hidden');
+                    if (isAllOpen) {
+                        //expandLink.text('Collapse All')
+                        //    .data('isAllOpen', true);
+                    }
+                },
+                // whenever we close a panel, check to see if they're all open
+                // if not all open, swap the button to expander
+                hide: function () {
+                    var isAllOpen = !contentAreas.is(':hidden');
+                    if (!isAllOpen) {
+                        expandLink.text('Expand all')
+                        .data('isAllOpen', false);
+                    }
+                }
+            });
+
+            var isAllOpen = $(this).data('isAllOpen');
+
+            contentAreas[isAllOpen ? 'hide' : 'show']()
+                .trigger(isAllOpen ? 'hide' : 'show');
+        };
+
+        /// ฟั่งชั่นทำลาย accordion
+        /// input |
+        /// output |
+        function removeAccordion() {
+            $("#accordion").remove();
+        }
+
+        /// ฟั่งชั่นเก็บ id_sd ที่ user เลือก
+        /// input | text = key word ที่ต้องการจะหา
+        /// output |
+        function keepSelect(chk) {
+            if (chk.prop('checked') == true) {
+                //เลือก
+                var index = listSelectCheckBox.indexOf(chk.data("id_sd"));
+                if (index == -1) {
+                    listSelectCheckBox.push(chk.data("id_sd"));
+                }
+            }
+            else {
+                //ไม่เลือก
+                var index = listSelectCheckBox.indexOf(chk.data("id_sd"));
+                if (index >= 0) {
+                    listSelectCheckBox.splice(index, 1);
+                }
+            }
+
+            checkDiseases();
+            //alert($(this).data("id"));
+        };
+
+        /// ฟั่งชั่นช่วยเรื่อง checkbox ให้มีการเลือกใหม่จากลิสที่เก็บไว้ว่าเลือกอะไรบ้าง
+        /// input |
+        /// output |
+        function manageCheck() {
+            var allCheckbox = $(":checkbox");
+            $.each(allCheckbox, function (key, value) {
+                // วนทุก checkbox
+                var index = listSelectCheckBox.indexOf($(value).data("id_sd"));
+                if (index >= 0) {
+                    // ถ้าเจอในค่าที่เลือกไว้ปรับ class checked
+                    $(value).prop('checked', true);
+                }
+            })
+        };
+
+        /// ทำการเช็คโรคจาก อาการที่เลือกเทียบกับที่ตั้งค่าไว้
+        /// input |
+        /// output |
+        function checkDiseases() {
+
+            var input = JSON.stringify({ list_id_sd: listSelectCheckBox });
+
+            $.ajax({
+                type: "POST",
+                url: urlService + "MatchDiseaseBySymptomSelect",
+                contentType: "application/json; charset=utf-8",
+                data: input,
+                dataType: "json",
+                success: function (msg) {
+                    listDiseases = msg.d;
+                    //alert(data[0].disease_name);
+
+                    listDiseases.sort(function (a, b) {
+                        var nameA = a.percent_disease; // ignore upper and lowercase
+                        var nameB = b.percent_disease; // ignore upper and lowercase
+                        if (nameA < nameB) {
+                            return 1;
+                        }
+                        if (nameA > nameB) {
+                            return -1;
+                        }
+
+                        // names must be equal
+                        return 0;
+                    });
+                    var group = $("#DivReport .list-group");
+                    $("#DivReport .list-group-item:not(.active)").remove();
+
+                    $.each(listDiseases, function (k, v) {
+                        // สร้างแจ้งเตือนเมื่อพบโรค
+                        var detail = $("<a href=#' class='list-group-item list-group-item-action' data-toggle='modal' data-target='#myModal'></a>").text(v.disease_name);
+                        var button = $('<button type="button"></button>');
+                        var span = $('<span class="badge"></span>').text(v.percent_disease + ' %')
+                        if (v.percent_disease < 100) {
+                            span.addClass("badge badge-c-warning");
+                        }
+                        else {
+                            span.addClass("badge badge-c-success");
+                        }
+
+                        detail.data("id_disease", v.id_disease);
+                        detail.click(function () {
+                            displayPatternResult($(this).data("id_disease"));
+                        })
+
+                        detail.append(span);
+                        group.append(detail);
+                    })
+
+                    if ($(window).width() < 992) {
+                        // ทำงานเฉพาะโหมด mobile
+                        if (listDiseases.length == 0) {
+                            // ไม่พบโรค
+                            if ($("#DivMatch").css('display') != 'none') {
+                                // ถ้าเห็นให้หาย
+                                $("#DivMatch").toggle('slide', { direction: 'right' }, 500);
+                            }
+                        }
+                        else {
+                            // พบโรค
+                            if ($("#DivMatch").css('display') == 'none') {
+                                // ถ้าไม่เห็นให้เห็น
+                                $("#DivMatch").toggle('slide', { direction: 'left' }, 500);
+                            }
+                            $("#BadgeMatch").text(listDiseases.length);
+                        }
+                    }
+
+                    //if (listDiseases.length > 0) {
+                    //    // เล่นสีเมื่อเจอโรค
+
+                    //    if (listDiseases[0].percent_disease >= 0 & listDiseases[0].percent_disease <=24) {
+                    //        $("body").animate({ backgroundColor: "#c2dde6" }, 20000);
+                    //    }
+                    //    else if (listDiseases[0].percent_disease >= 25 & listDiseases[0].percent_disease <= 49) {
+                    //        $("body").animate({ backgroundColor: "#c2cde6" }, 'slow');
+                    //    }
+                    //    else if (listDiseases[0].percent_disease >= 50 & listDiseases[0].percent_disease <= 74) {
+                    //        $("body").animate({ backgroundColor: "#e6c2dd" }, 'slow');
+                    //    }
+                    //    else if (listDiseases[0].percent_disease >= 75 & listDiseases[0].percent_disease <= 99) {
+                    //        $("body").animate({ backgroundColor: "#d2c6c6" }, 'slow');
+                    //    }
+                    //    else {
+                    //        $("body").animate({ backgroundColor: "#a6a6a6" }, 'slow');
+                    //    };
+                    //}
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert(textStatus);
+                }
+            });
+
+        };
+
+        /// แสดง pattern ทั้งหมด
+        /// input | โรค และ รายละเอียดต่างๆ
+        /// output |
+        function displayPatternResult(diseaseId) {
+            var foundDisease = listDiseases.filter(function (el) {
+                return el.id_disease == diseaseId;
+            });
+
+            // ใส่ชื่อโรค
+            $("#myModalLabel").text(foundDisease[0].disease_name);
+
+            // ล้างเนื้อหา
+            var group = $("#DivPattern");
+            $(group).html("");
+
+            var delimiter = ">";
+            var priority = "";
+            $.each(foundDisease[0].Patterns, function (key, value) {
+                detail = $("<span name='SpanSymptomResult' class='badge badge-c-info' style='margin-right: 3px;'></span>").text(value.selectMatch + '/' + value.match);
+
+                // คลิ๊กเลือกกลุ่มอาการตัวเอง
+                detail.click(function () {
+                    displaySymptomResult(value.Symptoms);
+                });
+
+                // ถ้าเป็นคนละ priority จะมีตัวคั่น
+                if (priority != "") {
+                    if (priority != value.priority) {
+                        group.append("<span style='font-weight: bolder;margin-top: 0px;margin-right: 5px;'" + delimiter + "></span>");
+                    }
+                    priority = value.priority;
+                }
+                else {
+                    priority = value.priority;
+                }
+
+                group.append(detail);
+            })
+
+
+            $("span[name='SpanSymptomResult']:first").trigger("click");
+
+        }
+
+        /// แสดงผลลัพธ์อากการที่เลือกไว้ ของโรคนั้นๆ
+        /// input | รายการ อาการที่ถูกเลิอกของ pattern นั้นๆ
+        /// output |
+        function displaySymptomResult(symptoms) {
+
+            // ล้างเนื้อหา
+            var group = $("#UlGroupSymptom");
+            $(group).html("");
+
+            $.each(symptoms, function (key, value) {
+
+                var detail = $("<li></li>").text(' ' + value.symptom_name);
+                if (value.is_select == true) {
+                    detail.addClass("list-group-item list-group-item-success");
+                    detail.prepend('<span class="glyphicon glyphicon-check">')
+                }
+                else {
+                    detail.addClass("list-group-item list-group-item-secondary")
+                }
+
+                group.append(detail);
+            })
+
+        }
+
+
+
+    </script>
+
+</body>
+</html>
